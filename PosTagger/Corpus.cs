@@ -1,12 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  Projekt Sporazumevanje v slovenskem jeziku: 
+ *  Projekt Sporazumevanje v slovenskem jeziku:
  *    http://www.slovenscina.eu/Vsebine/Sl/Domov/Domov.aspx
- *  Project Communication in Slovene: 
+ *  Project Communication in Slovene:
  *    http://www.slovenscina.eu/Vsebine/En/Domov/Domov.aspx
  *
  *  File:    Corpus.cs
- *  Desc:    Textual corpus, XML-TEI support 
+ *  Desc:    Textual corpus, XML-TEI support
  *  Created: Jun-2009
  *  License: MIT (see LICENSE.txt)
  *
@@ -73,11 +73,11 @@ namespace PosTagger
         }
 
         internal void SetEndOfParagraphFlag()
-        { 
+        {
             mEop = true;
         }
 
-        internal void RemoveEndOfParagraphFlag() 
+        internal void RemoveEndOfParagraphFlag()
         {
             mEop = false;
         }
@@ -155,7 +155,7 @@ namespace PosTagger
     */
     public class Corpus
     {
-        private ArrayList<TaggedWord> mTaggedWords 
+        private ArrayList<TaggedWord> mTaggedWords
             = new ArrayList<TaggedWord>();
         private string mTeiHeader
             = null;
@@ -216,7 +216,7 @@ namespace PosTagger
                 StringBuilder str = new StringBuilder();
                 foreach (TaggedWord taggedWord in mTaggedWords)
                 {
-                    str.AppendLine(string.Format("{0}\t{1}", taggedWord.Word, taggedWord.Tag));
+                    str.AppendLine(string.Format("{0}\t{1}", taggedWord.Word, taggedWord.Lemma));
                 }
                 return str.ToString();
             }
@@ -224,8 +224,8 @@ namespace PosTagger
             {
                 StringBuilder str = new StringBuilder();
                 str.AppendLine("<TEI xmlns=\"http://www.tei-c.org/ns/1.0\">");
-                if (mTeiHeader != null) 
-                { 
+                if (mTeiHeader != null)
+                {
                     str.Append(mTeiHeader);
                 }
                 str.AppendLine("\t<text>");
@@ -276,7 +276,7 @@ namespace PosTagger
                     str.Append(mTeiHeader);
                 }
                 str.AppendLine("\t<text>");
-                str.AppendLine("\t\t<body>");               
+                str.AppendLine("\t\t<body>");
                 bool newSentence = true;
                 bool newParagraph = true;
                 foreach (TaggedWord taggedWord in mTaggedWords)
@@ -345,7 +345,7 @@ namespace PosTagger
             }
         }
 
-        public void LoadFromTextSsjTokenizer(string text, int numThreads) 
+        public void LoadFromTextSsjTokenizer(string text, int numThreads)
         {
             Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
             mTaggedWords.Clear();
@@ -398,7 +398,7 @@ namespace PosTagger
             while (xmlReader.Read())
             {
                 if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "p") // paragraph
-                {                    
+                {
                     while (xmlReader.Read() && !(xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "p"))
                     {
                         if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "s") // sentence
@@ -431,7 +431,7 @@ namespace PosTagger
                                 mTaggedWords.Last.MoreInfo.SetEndOfSentenceFlag();
                                 if (mTaggedWords.Last.MoreInfo.Punctuation)
                                 {
-                                    mTaggedWords.Last.Tag += "<eos>"; // end-of-statement punctuation                               
+                                    mTaggedWords.Last.Tag += "<eos>"; // end-of-statement punctuation
                                 }
                             }
                         }
@@ -442,9 +442,9 @@ namespace PosTagger
             xmlReader.Close();
         }
 
-        private static Regex mTeiHeaderStart 
+        private static Regex mTeiHeaderStart
             = new Regex(@"\<teiHeader[^>]*\>.*$", RegexOptions.Compiled);
-        private static Regex mTeiHeaderEnd 
+        private static Regex mTeiHeaderEnd
             = new Regex(@"^.*\</teiHeader\>", RegexOptions.Compiled);
         private static Regex mTeiHeaderFull
             = new Regex(@"\<teiHeader[^>]*\>.*\</teiHeader\>", RegexOptions.Compiled);
@@ -455,7 +455,7 @@ namespace PosTagger
             StreamReader reader = new StreamReader(fileName);
             string line;
             while ((line = reader.ReadLine()) != null)
-            {                
+            {
                 Match m;
                 if ((m = mTeiHeaderFull.Match(line)).Success)
                 {
@@ -473,16 +473,16 @@ namespace PosTagger
                     mTeiHeader = sb.ToString();
                     break;
                 }
-                else if (sb != null) 
-                { 
-                    sb.AppendLine(line); 
+                else if (sb != null)
+                {
+                    sb.AppendLine(line);
                 }
             }
             reader.Close();
         }
 
         public void LoadFromGigaFidaFile(string fileName, int numThreads)
-        { 
+        {
             Utils.ThrowException(fileName == null ? new ArgumentNullException("fileName") : null);
             Utils.ThrowException(!Utils.VerifyFileNameOpen(fileName) ? new ArgumentValueException("fileName") : null);
             XmlTextReader xmlReader = null;
@@ -578,7 +578,7 @@ namespace PosTagger
                                     mTaggedWords.Last.MoreInfo.SetEndOfSentenceFlag();
                                     if (mTaggedWords.Last.MoreInfo.Punctuation)
                                     {
-                                        mTaggedWords.Last.Tag += "<eos>"; // end-of-statement punctuation                               
+                                        mTaggedWords.Last.Tag += "<eos>"; // end-of-statement punctuation
                                     }
                                 }
                             }
@@ -743,7 +743,7 @@ namespace PosTagger
                 {
                     AddFeature("cu", featureSpace, extendFeatureSpace, featureVector);
                 }
-            } 
+            }
             // starts with capital letter?
             if (mTaggedWords[wordIdx].Word.Length > 0 && char.IsUpper(mTaggedWords[wordIdx].Word[0]))
             {

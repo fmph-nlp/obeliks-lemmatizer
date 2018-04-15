@@ -1,12 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  Projekt Sporazumevanje v slovenskem jeziku: 
+ *  Projekt Sporazumevanje v slovenskem jeziku:
  *    http://www.slovenscina.eu/Vsebine/Sl/Domov/Domov.aspx
- *  Project Communication in Slovene: 
+ *  Project Communication in Slovene:
  *    http://www.slovenscina.eu/Vsebine/En/Domov/Domov.aspx
- *    
+ *
  *  File:    PosTagger.cs
- *  Desc:    Part-of-speech tagger 
+ *  Desc:    Part-of-speech tagger
  *  Created: Sep-2009
  *  License: MIT (see LICENSE.txt)
  *
@@ -30,7 +30,7 @@ namespace PosTagger
        |
        '-----------------------------------------------------------------------
     */
-    public class PartOfSpeechTagger 
+    public class PartOfSpeechTagger
     {
         private static Logger mLogger
             = Logger.GetLogger(typeof(PartOfSpeechTagger));
@@ -50,7 +50,7 @@ namespace PosTagger
             = false;
 
         public PartOfSpeechTagger()
-        { 
+        {
         }
 
         public PartOfSpeechTagger(string taggerModelFile, string lemmatizerModelFile)
@@ -65,24 +65,24 @@ namespace PosTagger
 
         public void LoadModels(string taggerModelFile, string lemmatizerModelFile)
         {
-            Utils.ThrowException(!Utils.VerifyFileNameOpen(taggerModelFile) ? new ArgumentValueException("taggerModelFile") : null);
+            //Utils.ThrowException(!Utils.VerifyFileNameOpen(taggerModelFile) ? new ArgumentValueException("taggerModelFile") : null);
             Utils.ThrowException((lemmatizerModelFile != null && !Utils.VerifyFileNameOpen(lemmatizerModelFile)) ? new ArgumentValueException("lemmatizerModelFile") : null);
-            BinarySerializer taggerModelSer = new BinarySerializer(new FileStream(taggerModelFile, FileMode.Open, FileAccess.Read, FileShare.Read));
+            //BinarySerializer taggerModelSer = new BinarySerializer(new FileStream(taggerModelFile, FileMode.Open, FileAccess.Read, FileShare.Read));
             BinarySerializer lemmatizerModelSer = null;
             if (lemmatizerModelFile != null)
             {
                 lemmatizerModelSer = new BinarySerializer(new FileStream(lemmatizerModelFile, FileMode.Open, FileAccess.Read, FileShare.Read));
             }
-            LoadModels(taggerModelSer, lemmatizerModelSer);
+            LoadModels(null, lemmatizerModelSer);
         }
 
         public void LoadModels(BinarySerializer taggerModelSer, BinarySerializer lemmatizerModelSer)
         {
-            Utils.ThrowException(taggerModelSer == null ? new ArgumentNullException("taggerModelSer") : null);
+            /*Utils.ThrowException(taggerModelSer == null ? new ArgumentNullException("taggerModelSer") : null);
             mLogger.Debug("Load", "Nalagam model za označevanje ...");
             mSuffixTree = new PatriciaTree(taggerModelSer);
             mFeatureSpace = Utils.LoadDictionary<string, int>(taggerModelSer);
-            mModel = new MaximumEntropyClassifierFast<string>(taggerModelSer);
+            mModel = new MaximumEntropyClassifierFast<string>(taggerModelSer);*/
             if (lemmatizerModelSer != null)
             {
                 mLogger.Debug("Load", "Nalagam model za lematizacijo ...");
@@ -115,7 +115,7 @@ namespace PosTagger
                         newResult.Add(result[i]);
                     }
                 }
-            }          
+            }
             return new Prediction<string>(newResult);
         }
 
@@ -130,13 +130,13 @@ namespace PosTagger
             lemmaWords = 0;
             for (int i = 0; i < corpus.TaggedWords.Count; i++)
             {
-                mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Tag", "{0} / {1}", i + 1, corpus.TaggedWords.Count);
-                BinaryVector featureVector = corpus.GenerateFeatureVector(i, mFeatureSpace, /*extendFeatureSpace=*/false, mSuffixTree);
-                Prediction<string> result = mModel.Predict(featureVector);
-                if ((corpus.TaggedWords[i].MoreInfo != null && corpus.TaggedWords[i].MoreInfo.Punctuation) || 
+                //mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Tag", "{0} / {1}", i + 1, corpus.TaggedWords.Count);
+                //BinaryVector featureVector = corpus.GenerateFeatureVector(i, mFeatureSpace, /*extendFeatureSpace=*/false, mSuffixTree);
+                //Prediction<string> result = mModel.Predict(featureVector);
+                if ((corpus.TaggedWords[i].MoreInfo != null && corpus.TaggedWords[i].MoreInfo.Punctuation) ||
                     (corpus.TaggedWords[i].MoreInfo == null && mNonWordRegex.Match(corpus.TaggedWords[i].WordLower).Success)) // non-word
                 {
-                    bool flag = false;
+                    /*bool flag = false;
                     foreach (KeyDat<double, string> item in result)
                     {
                         if (corpus.TaggedWords[i].Word == item.Dat || corpus.TaggedWords[i].Word + "<eos>" == item.Dat)
@@ -149,26 +149,26 @@ namespace PosTagger
                     if (!flag)
                     {
                         corpus.TaggedWords[i].Tag = corpus.TaggedWords[i].Word;
-                    }
+                    }*/
                 }
                 else // word
                 {
                     string wordLower = corpus.TaggedWords[i].WordLower;
-                    Set<string> filter = mSuffixTree.Contains(wordLower) ? mSuffixTree.GetTags(wordLower) : null;                    
-                    result = ProcessResult(result, filter);//???!!!
+                    //Set<string> filter = mSuffixTree.Contains(wordLower) ? mSuffixTree.GetTags(wordLower) : null;
+                    //result = ProcessResult(result, filter);//???!!!
                     string goldTag = corpus.TaggedWords[i].Tag;
                     string word = corpus.TaggedWords[i].Word;
                     string rule;
-                    if (filter == null)
+                    /*if (filter == null)
                     {
                         filter = Rules.ApplyTaggerRules(CreateFilterFromResult(result), word, out rule);
                     }
                     else
                     {
-                        filter = Rules.ApplyTaggerRules(filter, word, out rule);                        
+                        filter = Rules.ApplyTaggerRules(filter, word, out rule);
                         if (filter.Count == 0) { filter = Rules.ApplyTaggerRules(CreateFilterFromResult(result), word, out rule); }
                     }
-                    result = ProcessResult(result, filter);//???!!!            
+                    result = ProcessResult(result, filter);//???!!!
                     string predictedTag;
                     if (result.Count == 0)
                     {
@@ -178,19 +178,19 @@ namespace PosTagger
                     {
                         predictedTag = result.BestClassLabel;
                     }
-                    corpus.TaggedWords[i].Tag = predictedTag;
+                    corpus.TaggedWords[i].Tag = predictedTag;*/
                     if (mLemmatizer != null)
                     {
                         string lemma;
-                        lemma = mConsiderTags ? mLemmatizer.Lemmatize(wordLower, predictedTag) : mLemmatizer.Lemmatize(wordLower);
-                        lemma = Rules.FixLemma(lemma, corpus.TaggedWords[i].Word, predictedTag);
+                        lemma = /*mConsiderTags ? mLemmatizer.Lemmatize(wordLower, predictedTag) : */mLemmatizer.Lemmatize(wordLower);
+                        //lemma = Rules.FixLemma(lemma, corpus.TaggedWords[i].Word, predictedTag);
                         if (string.IsNullOrEmpty(lemma)) { lemma = wordLower; }
                         if (xmlMode)
                         {
                             lemmaWords++;
                             if (lemma == corpus.TaggedWords[i].Lemma)
                             {
-                                lemmaCorrect++;                                
+                                lemmaCorrect++;
                             }
                             if (corpus.TaggedWords[i].Lemma != null && lemma.ToLower() == corpus.TaggedWords[i].Lemma.ToLower())
                             {
@@ -214,7 +214,7 @@ namespace PosTagger
         public bool IsKnownWord(string word)
         {
             Utils.ThrowException(mSuffixTree == null ? new InvalidOperationException() : null);
-            Utils.ThrowException(word == null ? new ArgumentNullException("word") : null);            
+            Utils.ThrowException(word == null ? new ArgumentNullException("word") : null);
             return mSuffixTree.Contains(word.ToLower());
         }
     }

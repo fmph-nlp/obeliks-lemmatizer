@@ -1,8 +1,8 @@
 ﻿/*==========================================================================;
  *
- *  Projekt Sporazumevanje v slovenskem jeziku: 
+ *  Projekt Sporazumevanje v slovenskem jeziku:
  *    http://www.slovenscina.eu/Vsebine/Sl/Domov/Domov.aspx
- *  Project Communication in Slovene: 
+ *  Project Communication in Slovene:
  *    http://www.slovenscina.eu/Vsebine/En/Domov/Domov.aspx
  *
  *  File:    PosTaggerTag\Program.cs
@@ -36,12 +36,12 @@ namespace PosTagger
             mLogger.Info(null, "*** Oblikoslovni označevalnik 1.0 - Modul za označevanje ***");
             mLogger.Info(null, "");
             mLogger.Info(null, "Uporaba:");
-            mLogger.Info(null, "PosTaggerTag [<nastavitve>] <vhodne_datoteke> <model_bin> <označeni_korpus_xml>"); 
+            mLogger.Info(null, "PosTaggerTag [<nastavitve>] <vhodne_datoteke> <model_bin> <označeni_korpus_xml>");
             mLogger.Info(null, "");
             mLogger.Info(null, "<nastavitve>:     Glej spodaj.");
             mLogger.Info(null, "<besedilo>:       Besedilo za označevanje (vhod).");
             mLogger.Info(null, "<model_bin>:      Model za označevanje (vhod).");
-            mLogger.Info(null, "<označeni_korpus_xml>:"); 
+            mLogger.Info(null, "<označeni_korpus_xml>:");
             mLogger.Info(null, "                  Označeni korpus v formatu XML-TEI (izhod).");
             mLogger.Info(null, "");
             mLogger.Info(null, "Nastavitve:");
@@ -56,7 +56,7 @@ namespace PosTagger
             mLogger.Info(null, "-tt:<int>0>       Število niti za paralelizacijo tokenizacije.");
             mLogger.Info(null, "                  (privzeto: 1)");
             mLogger.Info(null, "-o                Prepiši obstoječe izhodne datoteke.");
-            mLogger.Info(null, "                  (privzeto: ne prepiši obstoječih datotek)");           
+            mLogger.Info(null, "                  (privzeto: ne prepiši obstoječih datotek)");
 #endif
         }
 
@@ -74,7 +74,7 @@ namespace PosTagger
             return null;
         }
 
-        private static bool ParseParams(string[] args, ref bool verbose, ref string inputFolder, ref string searchPattern, 
+        private static bool ParseParams(string[] args, ref bool verbose, ref string inputFolder, ref string searchPattern,
             ref string taggerModelFile, ref string lemmatizerModelFile, ref string outputFileOrFolder, ref bool ssjTokenizer,
             ref bool searchSubfolders, ref bool overwrite, ref int numThreads)
         {
@@ -144,7 +144,7 @@ namespace PosTagger
                 return false;
             }
             bool isFolder = searchPattern.Contains("*") || searchPattern.Contains("?");
-            if ((isFolder && !(Utils.VerifyFolderName(outputFileOrFolder, /*mustExist=*/false))) || (!isFolder && !Utils.VerifyFileNameCreate(outputFileOrFolder))) 
+            if ((isFolder && !(Utils.VerifyFolderName(outputFileOrFolder, /*mustExist=*/false))) || (!isFolder && !Utils.VerifyFileNameCreate(outputFileOrFolder)))
             {
                 mLogger.Info(null, "*** Napačno ime izhodne {1} ({0}).\r\n", outputFileOrFolder, isFolder ? "mape" : "datoteke");
                 OutputHelp();
@@ -155,8 +155,8 @@ namespace PosTagger
                 mLogger.Info(null, "*** S podanim iskalnim vzorcem ni moč najti nobene vhodne datoteke.");
                 mLogger.Info(null, "Mapa z vhodnimi datotekami: {0}", inputFolder);
                 mLogger.Info(null, "Iskalni vzorec: {0}", searchPattern);
-                OutputHelp();                
-                return false;            
+                OutputHelp();
+                return false;
             }
             return true;
         }
@@ -279,7 +279,7 @@ namespace PosTagger
                             tagger.Tag(corpus, out lemmaCorrect, out lemmaCorrectLowercase, out lemmaWords, xmlMode);
                             mLogger.Debug(null, "Zapisujem označeno besedilo v datoteko {0} ...", outputFileName);
                             StreamWriter writer = new StreamWriter(outputFileName);
-                            writer.Write(corpus.ToString(xmlMode || ssjTokenizer ? "XML-MI" : "XML"));
+                            writer.Write(corpus.ToString(xmlMode || ssjTokenizer ? "XML-MI" : "TT"));
                             writer.Close();
                             mLogger.Debug(null, "Končano.");
                             if (xmlMode)
@@ -374,4 +374,3 @@ namespace PosTagger
         }
     }
 }
- 
